@@ -1,3 +1,13 @@
+function getTimeString (time){
+    const hour = parseInt(time/3600);
+    let remainingSecond = time % 3600;
+    let minute = parseInt(remainingSecond / 60);
+    remainingSecond = remainingSecond % 60;
+    return `${hour} hour ${minute} minute ago`;
+}
+
+
+
 const loadCategories = () => {
   fetch("https://openapi.programming-hero.com/api/phero-tube/categories")
     .then((response) => response.json())
@@ -5,16 +15,27 @@ const loadCategories = () => {
     .catch((error) => console.log(error));
 };
 
+const loadCategoriesVideo = (id) => {
+  fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+  .then((response) => response.json())
+  .then((data) =>displayVideos(data.category))
+  .catch((error) => console.log(error));
+}
+
 const displayCategories = (categories) => {
   const categoriesContainer = document.getElementById("categories");
   categories.forEach((item) => {
     // creating button
-    const button = document.createElement("button");
-    button.classList = "btn";
-    button.innerText = item.category;
+    const buttonContainer = document.createElement("div");
+    buttonContainer.innerHTML =`
+    <button onclick ="loadCategoriesVideo(${item.category_id})" class="btn">
+    ${item.category}
+    </button>
+    
+    `
 
     // adding button
-    categoriesContainer.append(button);
+    categoriesContainer.append(buttonContainer);
   });
 };
 loadCategories();
@@ -52,6 +73,22 @@ const loadvideos = () => {
 
 const displayVideos = (videos) => {
   const videosContainer = document.getElementById("videos");
+  videosContainer.innerHTML = "";
+  if(videos.length == 0){
+    videosContainer.classList.remove('grid');
+    videosContainer.innerHTML = `
+    <div class ='flex flex-col justify-center items-center min-h-[300px] space-y-3'>
+    <img  src="./assets/Icon.png" alt="">
+    <h2 class='text-center text-2xl font-bold'>
+    Oops!! Sorry, There is no content here
+    </h2>
+    </div>
+    `;
+    return;
+  }
+  else{
+    videosContainer.classList.add('grid');
+  }
   videos.forEach((video) => {
     console.log(video);
 
@@ -64,8 +101,8 @@ const displayVideos = (videos) => {
       src= ${video.thumbnail}
       class ='h-full w-full object-cover cursor-pointer'
       alt="Shoes" />
-      ${video.others.posted_date?.length == 0 ? "" : `      <span class = 'absolute right-2 bottom-2 bg-black text-white p-1'>
-      ${video.others.posted_date}
+      ${video.others.posted_date?.length == 0 ? "" : `      <span class = 'absolute right-2 bottom-2 bg-black text-white p-1 text-xs'>
+      ${getTimeString(video.others.posted_date)}
       </span>`}
 
   </figure>
