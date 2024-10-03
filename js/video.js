@@ -89,8 +89,8 @@ loadCategories();
 //     "description": "John Mulaney's 'Kid Gorgeous' has captured the hearts of many with 241K views. As a verified comedian, John delivers a masterclass in stand-up with clever anecdotes, quick wit, and relatable humor. This performance is a laugh-filled adventure through his unique take on life, politics, and pop culture."
 // }
 
-const loadvideos = () => {
-  fetch("https://openapi.programming-hero.com/api/phero-tube/videos")
+const loadvideos = (searchText = "") => {
+  fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${searchText}`)
     .then((response) => response.json())
     .then((data) => displayVideos(data.videos))
     .catch((error) => console.log(error));
@@ -162,3 +162,7 @@ const displayVideos = (videos) => {
 };
 
 loadvideos();
+
+document.getElementById('search-input').addEventListener('keyup', (event) => {
+loadvideos(event.target.value);
+} )
